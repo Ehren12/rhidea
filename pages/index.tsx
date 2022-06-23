@@ -1,5 +1,5 @@
 import React from "react"
-import { GetServerSideProps, GetStaticProps } from "next"
+import { GetServerSideProps} from "next"
 // pages/index.tsx
 import prisma from '../lib/prisma';
 
