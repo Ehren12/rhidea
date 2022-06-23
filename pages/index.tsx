@@ -7,7 +7,7 @@ import Layout from "../components/Layout"
 import Post, { PostProps } from "../components/Post"
 
 // index.tsx
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
   const feed = await prisma.post.findMany({
     where: { published: true },
     include: {
