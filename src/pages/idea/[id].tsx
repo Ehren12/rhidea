@@ -38,6 +38,7 @@ const PostViewPage: NextPageWithLayout = () => {
       <div className="prose container mx-auto px-8">
         <h1 className="text-3xl font-medium my-5">{data.title}</h1>
         <p className="text-xl font-thin my-5">{data.text}</p>
+        <div className="my-5" dangerouslySetInnerHTML={{ __html: data.text }} />
         <em>Created {data.createdAt.toLocaleDateString("en-us")}</em>
         <button className={ `like-button ${isClicked && 'liked'}` } onClick={ handleClick }>
       <span className="likes-counter">{ `Like | ${likes}` }</span>

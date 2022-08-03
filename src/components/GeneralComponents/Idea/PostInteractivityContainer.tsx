@@ -6,7 +6,13 @@ import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import { useEffect, useState } from "react";
-
+import {
+  Heart,
+  HeartStraight,
+  ChatCenteredDots,
+  Sparkle,
+  Share
+} from "phosphor-react";
 import LikeButton from "../LikeButton";
 import UnLikeButton from "../UnlikeButton";
 
@@ -111,18 +117,25 @@ const PostInteractivity = () => {
   //   setDislikeIsActive(!dislikeIsActive);
   // };
   return (
-    <div>
+    <div className="py-2 flex flex-row">
+      <div className="flex flex-row space-x-4 w-fit">
       <LikeButton
         isClicked={likeIsActive}
         likes={likes}
         handleClick={handleLikeClick}
         disable={addLike.isLoading || removeLike.isLoading}
       />
+      <ChatCenteredDots size={28} color="#fff" weight="light" className="my-auto mr-2"/>
+      <Share size={28} color="#fff" weight="light" className="my-auto ml-1"/>
       {/*<UnLikeButton*/}
       {/*  isClicked={dislikeIsActive}*/}
       {/*  dislikes={dislikes}*/}
       {/*  handleClick={handleDisLikeClick}*/}
       {/*/>*/}
+      </div>
+      <div className="ml-auto px-2">
+        <Sparkle size={28} color="#fff" weight="light" className="my-auto"/>
+      </div>
     </div>
   );
 };

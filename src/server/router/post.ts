@@ -34,7 +34,7 @@ export const postRouter = createRouter()
   .mutation('add', {
     input: z.object({
       id: z.string().uuid().optional(),
-      title: z.string().min(1).max(32),
+      title: z.string().min(1).max(150),
       text: z.string().min(1),
     }),
     async resolve({ input, ctx }) {

@@ -78,7 +78,7 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
   likes     Like[]
-
+  backgroundColor String?
   @@index([creatorId])
 }
 
@@ -91,12 +91,4 @@ model Like {
 
   @@id([postId, userId])
   @@index([postId, userId])
-}
-
-model Comment {
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  commenter   User     @relation(fields: [commenterId], references: [id], onDelete: Cascade)
-  commenterId String
-  postId    String
-  createdAt DateTime @default(now())
 }
