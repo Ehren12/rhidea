@@ -62,8 +62,14 @@ export const likeRouter = createRouter()
     },
   })
   .query("allLikesCount", {
-    async resolve({ ctx }) {
-      return ctx.prisma.post.findMany({
+    input: z.object({
+      postId: z.any(),
+      userId: z.any(),
+    }),
+    async resolve({ input, ctx }) {
+      const { postId } = input;
+      return ctx.prisma.post.findUnique({
+        where: {id: postId},
         include: {
           _count: {
             select: { likes: true },
@@ -72,7 +78,7 @@ export const likeRouter = createRouter()
       });
     },
   })
-  .query("liked", {
+  .query("like", {
     input: z.object({
       postId: z.any(),
       userId: z.any(),
@@ -80,15 +86,13 @@ export const likeRouter = createRouter()
     async resolve({ input, ctx }) {
       const { postId } = input;
       const { userId } = input;
-      const post = await ctx.prisma.like.findUnique({
+      const like = await ctx.prisma.like.findUnique({
         where: { postId_userId: { postId: postId, userId: userId } },
         select: defaultLikeSelect,
       });
-      if (!post) {
-        return false;
-      } else {
-        return true;
-      }
+      if (like){
+        return true
+      } else { return false} 
     },
   })
   // update
@@ -113,8 +117,8 @@ export const likeRouter = createRouter()
   // delete
   .mutation("deleteLike", {
     input: z.object({
-      postId: z.any(),
-      userId: z.any(),
+      postId: z.string(),
+      userId: z.string(),
     }),
     async resolve({ input, ctx }) {
       const { postId } = input;
@@ -122,9 +126,5 @@ export const likeRouter = createRouter()
       await ctx.prisma.like.delete({
         where: { postId_userId: { postId: postId, userId: userId } },
       });
-      return {
-        postId,
-        userId
-      };
     },
   });

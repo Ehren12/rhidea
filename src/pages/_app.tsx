@@ -1,18 +1,20 @@
-import '../styles/globals.css';
-import { useCreateStore, Provider } from "../lib/store";
-import { httpBatchLink } from '@trpc/client/links/httpBatchLink';
-import { loggerLink } from '@trpc/client/links/loggerLink';
-import { withTRPC } from '@trpc/next';
-import { NextPage } from 'next';
-import { AppProps } from 'next/app';
-import { AppType } from 'next/dist/shared/lib/utils';
-import { ReactElement, ReactNode } from 'react';
-import superjson from 'superjson';
-import { DefaultLayout } from '../components/LayoutComponents/DefaultLayout';
+import "../styles/globals.css";
+// import { useCreateStore, Provider, useProgressStore } from "../store/";
+import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
+import { loggerLink } from "@trpc/client/links/loggerLink";
+import { withTRPC } from "@trpc/next";
+import { NextPage } from "next";
+import { AppProps } from "next/app";
+import { useRouter } from "next/router";
+import { Progress } from "../components/ProgressBar";
+import { useProgressStore } from "../store/";
+import { AppType } from "next/dist/shared/lib/utils";
+import { ReactElement, ReactNode, useEffect } from "react";
+import superjson from "superjson";
+import { DefaultLayout } from "../components/LayoutComponents/DefaultLayout";
 import type { AppRouter } from "../server/router";
-import { SSRContext } from '../utils/trpc';
+import { SSRContext } from "../utils/trpc";
 import { SessionProvider } from "next-auth/react";
-
 export type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -22,16 +24,41 @@ type AppPropsWithLayout = AppProps & {
 };
 
 const MyApp = (({ Component, pageProps }: AppPropsWithLayout) => {
-  const createStore = useCreateStore(pageProps.initialZustandState);
-  const getLayout =
-    Component.getLayout ?? ((page) => <Provider createStore={createStore}><SessionProvider session={pageProps.session}><DefaultLayout>{page}</DefaultLayout></SessionProvider></Provider>);
+  const setIsAnimating = useProgressStore((state: any) => state.setIsAnimating);
+  const isAnimating = useProgressStore((state: any) => state.isAnimating);
+  const router = useRouter();
+  useEffect(() => {
+    const handleStart = () => {
+      setIsAnimating(true);
+    };
+    const handleStop = () => {
+      setIsAnimating(false);
+    };
 
-  return getLayout(<Component {...pageProps} />);
+    router.events.on("routeChangeStart", handleStart);
+    router.events.on("routeChangeComplete", handleStop);
+    router.events.on("routeChangeError", handleStop);
+
+    return () => {
+      router.events.off("routeChangeStart", handleStart);
+      router.events.off("routeChangeComplete", handleStop);
+      router.events.off("routeChangeError", handleStop);
+    };
+  }, [router]);
+  const getLayout =
+    Component.getLayout ??
+    ((page) => (
+      <SessionProvider session={pageProps.session}>
+        <DefaultLayout>{page}</DefaultLayout>
+      </SessionProvider>
+    ));
+
+  return getLayout(<><Progress isAnimating={isAnimating}/><Component {...pageProps} /></>);
 }) as AppType;
 
 function getBaseUrl() {
-  if (typeof window !== 'undefined') {
-    return '';
+  if (typeof window !== "undefined") {
+    return "";
   }
   // reference for vercel.com
   if (process.env.VERCEL_URL) {
@@ -62,8 +89,8 @@ export default withTRPC<AppRouter>({
         // adds pretty logs to your console in development and logs errors in production
         loggerLink({
           enabled: (opts) =>
-            process.env.NODE_ENV === 'development' ||
-            (opts.direction === 'down' && opts.result instanceof Error),
+            process.env.NODE_ENV === "development" ||
+            (opts.direction === "down" && opts.result instanceof Error),
         }),
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,

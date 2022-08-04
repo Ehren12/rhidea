@@ -1,6 +1,7 @@
 import { trpc } from "../../utils/trpc";
 import { NextPageWithLayout } from "../_app";
 import Link from "next/link";
+import * as wtf8 from 'wtf-8'
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -13,7 +14,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Idea } from "../../components/GeneralComponents/Idea/IdeaContainer";
 import { Editor } from "@tinymce/tinymce-react";
-
+import * as LZString from 'lz-string'
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 const NewIdeaPage: NextPageWithLayout = () => {
   const editorRef : any = useRef(null);
@@ -50,11 +51,22 @@ const NewIdeaPage: NextPageWithLayout = () => {
 
   const handleChange = (value: any | string) => {
     setText(value);
+    console.log(value)
   };
 
+  var textContent: any = editorRef.current ? editorRef.current.getContent() : ""
   // const [editorState, setEditorState] = useState(
   //   () => EditorState.createEmpty(),
   // );
+  console.log("Size of sample is: " + textContent.length);
+  var compressed = LZString.compress(textContent);
+  console.log("Size of compressed sample is: " + compressed.length);
+  console.log(compressed);
+  textContent = LZString.decompress(compressed);
+  console.log("Sample is: " + textContent);
+  const bytes = Buffer.byteLength(compressed, "utf16le");
+
+  console.log(" COMPRESSED SIZE IN BYTES === " + bytes);
 
   return (
     <>
@@ -74,11 +86,11 @@ const NewIdeaPage: NextPageWithLayout = () => {
               const $title: HTMLInputElement = (e as any).target.elements.title;
               const input = {
                 title: $title.value,
-                text: text,
+                text: wtf8.encode(compressed),
               };
               try {
                 await addPost.mutateAsync(input);
-
+                console.log("This is the second compressed: " + textContent)
                 $title.value = "";
               } catch {}
             }}
@@ -104,6 +116,9 @@ const NewIdeaPage: NextPageWithLayout = () => {
             />*/}
               {/*<ReactQuill  id="text" value={text} onChange={handleChange}/>*/}
               <Editor
+                id="text"
+                onChange={handleChange}
+  
                 apiKey="s9ogc5oa6vle2t2kpoe3ztk5lez6cccpez8ucakqn0nginjt"
                 onInit={(evt, editor) => (editorRef.current = editor)}
                 initialValue="<p>This is the initial content of the editor.</p>"

@@ -69,8 +69,8 @@ model VerificationToken {
 
 model Post {
   id        String   @id @default(cuid())
-  title     String
-  text      String
+  title     String   @db.Text
+  text      String   @db.Text
   creator   User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId String
   // To return `Date`s intact through the API we need to add data transformers

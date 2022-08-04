@@ -18,10 +18,10 @@ import {
 } from "phosphor-react";
 
 
-type IdeaProps = { id: ReactNode; title: ReactNode };
+type IdeaProps = { id: string; title: string, creatorId: string };
 
-export const Idea = ({ id, title }: IdeaProps) => {
-
+export const Idea = ({ id, title, creatorId }: IdeaProps) => {
+  const like: any = trpc.useQuery(["like.like", {postId: id, userId: creatorId}])
   const postsQuery = trpc.useQuery(["post.all"]);
   const { data: session } = useSession();
   const user: any = session?.user;
@@ -53,13 +53,13 @@ export const Idea = ({ id, title }: IdeaProps) => {
             </div>
         </div>
         <div className="h-full w-full pr-28 pl-14 pb-10 pt-8 m-auto">
-          <h1 className="text-4xl font-bold w-5/6">{title}</h1>
+          <Link href={`/idea/${id}`}><h1 className="text-4xl font-bold w-5/6"><a className="cursor-pointer hover:underline">{title}</a></h1></Link>
         </div>
         
         {/*<Link href={`/idea/${id}`}>
           <a>View more</a>
         </Link>*/}
-        <PostInteractivity />
+        <PostInteractivity id={id} creatorId={creatorId} isLiked={like.data}/>
       </div>
     </article>
     ) : (<h1>hi</h1>)}

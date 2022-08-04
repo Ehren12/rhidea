@@ -8,11 +8,14 @@ import { SidebarLeft } from "./SidebarLeft";
 import { Topbar } from "./Topbar";
 import Script from "next/script";
 import { SidebarRight } from "./SidebarRight";
-
+import { useState } from "react";
+import { Bell, ChatTeardropDots, MoonStars, Plus } from "phosphor-react";
 type DefaultLayoutProps = { children: ReactNode };
 
 export const DefaultLayout = ({ children }: DefaultLayoutProps) => {
   const { data: session } = useSession();
+  const [visibile, setVisibility] = useState(true);
+  const reveal = () => setVisibility(!visibile);
   const user: any = session?.user;
   return (
     <>
@@ -29,11 +32,33 @@ export const DefaultLayout = ({ children }: DefaultLayoutProps) => {
             <Topbar />
             <div className="h-20 w-full border-b border-border-dark/5 z-40 px-7">
               <div className="h-full w-fit my-auto py-3">
-                <h1 className="text-2xl font-bold opacity-70 my-auto">Your Feed</h1>
-                <p className="opacity-50 font-semibold text-sm">Ideas from those you follow</p>
+                <h1 className="text-2xl font-bold opacity-70 my-auto">
+                  Your Feed
+                </h1>
+                <p className="opacity-50 font-semibold text-sm">
+                  Ideas from those you follow
+                </p>
               </div>
             </div>
-            <div className="p-7 overflow-visible">{children}</div>
+            <div className="p-7 overflow-visible">
+              {children}
+              <div
+                className={`w-48 h-40 border border-border-dark/20 drop-shadow-xl bg-white fixed z-90 bottom-20 right-72 ${
+                  visibile ? "hidden" : "visible"
+                } duration-300`}
+              >
+                <Link href="/add/new-idea">
+                  <a>New Idea</a>
+                </Link>
+              </div>
+
+              <button
+                className="fixed z-90 bottom-5 right-72   w-12 h-12 rounded-full drop-shadow-lg shadow-current flex justify-center items-center text-white text-4xl hover:bg-dark-blue/90 hover:w-14 hover:h-14 hover:drop-shadow-2xl active:bg-dark-blue/90 active:w-14 active:h-14 active:drop-shadow-2xl duration-300"
+                onClick={reveal}
+              >
+                <Plus size={32} color="#333333" weight="thin" />
+              </button>
+            </div>
           </div>
           <SidebarRight />
         </main>
