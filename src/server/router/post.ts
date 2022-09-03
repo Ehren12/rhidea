@@ -38,6 +38,7 @@ const defaultPostSelect = Prisma.validator<Prisma.PostSelect>()({
   creatorId: true,
   createdAt: true,
   updatedAt: true,
+  backgroundColor: true,
 });
 
 const getEmailOrThrow = (ctx: any) => {
@@ -56,6 +57,7 @@ export const postRouter = createRouter()
       id: z.string().uuid().optional(),
       title: z.string().min(1).max(150),
       text: z.string(),
+      backgroundColor: z.string().min(3)
     }),
     async resolve({ input, ctx }) {
       const {text} = input

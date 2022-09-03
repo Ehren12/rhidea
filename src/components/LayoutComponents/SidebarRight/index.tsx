@@ -59,18 +59,20 @@ export const SidebarRight = () => {
 
 	return (
 		<nav
-			className={`md:ml-auto sticky left-0 top-0 h-screen w-96 duration-300 border-l border-border-dark/5`}
+			className={`md:ml-auto sticky left-0 top-0 h-screen w-96 duration-300 border-l border-gray-400/5`}
 		>
-			<div className="h-14 border-b border-border-dark/5 flex items-center px-3 flex-row space-x-2 hover:shadow-lg hover:shadow-border-dark/3">
+			<div className="h-14 border-b border-gray-400/5 flex items-center px-3 flex-row space-x-2 hover:shadow-lg hover:shadow-border-dark/3">
 				{user ? (
 					<>
 						<div className="h-11 w-11 rounded">
+						<Link href={`/foodboy_010`}>
 							<Image
 								src={`${user.image}`}
 								width={100}
 								height={100}
-								className="rounded-2xl"
+								className="rounded-2xl cursor-pointer"
 							/>
+							</Link>
 						</div>
 						<div className="flex flex-col space-y-0">
 							<h4 className="text-xs opacity-30 antialiased font-bold">
@@ -80,11 +82,14 @@ export const SidebarRight = () => {
 									? randomWord(afternoon_statements)
 									: randomWord(evening_statements)}
 							</h4>
-							<h1 className="text-lg antialiased font-medium  h-fit">
-								{user.name}
+							<Link href={`/foodboy_010`}>
+							<h1 className="text-lg antialiased font-medium  h-fit cursor-pointer">
+								<a>{user.name}</a>
 							</h1>
+							</Link>
 						</div>
 					</>
+					
 				) : (
 					<h1>nope</h1>
 				)}

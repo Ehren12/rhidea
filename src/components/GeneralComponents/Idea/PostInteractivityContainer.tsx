@@ -15,8 +15,10 @@ import {
 } from "phosphor-react";
 import LikeButton from "../LikeButton";
 import UnLikeButton from "../UnlikeButton";
+import { useCookies } from "react-cookie";
+import { InfiniteQueryObserver } from "react-query";
 
-const PostInteractivity = ({ id, creatorId, isLiked }: any) => {
+const PostInteractivity = ({ id, creatorId, isLiked, bgColor }: any) => {
   // const likesCount: any = trpc.useQuery(["like.allLikesCount", { postId, userId }]);
   // const allLikes: any = trpc.useQuery(["like.allLikes"]);
   // const { data } = likesCount;
@@ -116,6 +118,27 @@ const PostInteractivity = ({ id, creatorId, isLiked }: any) => {
   //   }
   //   setDislikeIsActive(!dislikeIsActive);
   // };
+  function setCookie(cname: string, cvalue: string, exdays: number) {
+    const d = new Date();
+    d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+    let expires = "expires=" + d.toUTCString();
+    document.cookie += cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+  function getCookie(cname: any) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(";");
+    for (let i = 0; i < ca.length; i++) {
+      let c: any = ca[i];
+      while (c.charAt(0) == " ") {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
   const utils = trpc.useContext();
   const addLike = trpc.useMutation("like.add", {
     async onSuccess() {
@@ -123,44 +146,80 @@ const PostInteractivity = ({ id, creatorId, isLiked }: any) => {
       await utils.invalidateQueries(["like.allLikes"]);
     },
   });
-  const userId = useSession().data?.user?.email
-  
+  const userId = useSession().data?.user?.email;
+  const entry = {
+    user: userId,
+    post: id,
+  };
+  var info: any = localStorage.getItem("allEntries");
+  var allEntries = JSON.parse(info) || [];
+  allEntries.push(entry);
 
+  var unlikeinfo: any = localStorage.getItem("unlikeEntries");
+  var unlikeEntries = JSON.parse(unlikeinfo) || [];
+  unlikeEntries.push(entry);
+
+  var names = new Array();
+  // const [cookies, setCookie, removeCookie] = useCookies(["like"]);
   const removeLike = trpc.useMutation("like.deleteLike");
   const [hasLiked, setHasLiked] = useState(isLiked);
   const addLikeFunc = async (e: Event) => {
     e.preventDefault();
-    if (!hasLiked) {  
-      const input = {
-        postId: id,
-      };
-      try {
-        await addLike.mutateAsync(input);
-      } catch {}
-    } 
+    if (!hasLiked) {
+      localStorage.setItem("latest_entry", JSON.stringify(entry));
+
+      localStorage.setItem("allEntries", JSON.stringify(allEntries));
+      setTimeout(function () {
+        allEntries?.map(async (item: any) => {
+          var filtered = allEntries?.filter((el: any) => {
+            return el?.post !== item?.post;
+          });
+          const input = {
+            postId: item?.post,
+          };
+          try {
+            await addLike.mutateAsync(input);
+            localStorage.setItem("allEntries", JSON.stringify(filtered));
+          } catch {}
+        });
+      }, 15000);
+    }
+
     if (hasLiked) {
-        const input = {
-          postId: id,
-          userId: creatorId,
-        };
-        try {
-          await removeLike.mutateAsync(input);
-        } catch {}
+      localStorage.setItem("latest_unlike_entry", JSON.stringify(entry));
+      localStorage.setItem("unlikeEntries", JSON.stringify(unlikeEntries));
+      setTimeout(function () {
+        unlikeEntries.map(async (item: any) => {
+          var filtered = unlikeEntries.filter((el: any) => {
+            return el.post != item.post;
+          });
+          console.log(item.post);
+          const input = {
+            postId: item.post,
+            userId: creatorId,
+          };
+          try {
+            await removeLike.mutateAsync(input);
+            localStorage.setItem("unlikeEntries", JSON.stringify(filtered));
+          } catch {}
+        });
+      }, 15000);
     }
 
     setHasLiked(!hasLiked);
   };
   return (
-    <div className="py-2 flex flex-row">
+    <div className="py-2 flex flex-row"                   style={{
+                    color: bgColor === "#fbbf24" ? "#000" : "#fff",
+                  }}>
       <div className="flex flex-row space-x-4 w-fit">
         <LikeButton isClicked={hasLiked} likes={2} handleClick={addLikeFunc} />
         <ChatCenteredDots
           size={28}
-          color="#fff"
           weight="light"
           className="my-auto mr-2"
         />
-        <Share size={28} color="#fff" weight="light" className="my-auto ml-1" />
+        <Share size={28} weight="light" className="my-auto ml-1" />
         {/*<UnLikeButton*/}
         {/*  isClicked={dislikeIsActive}*/}
         {/*  dislikes={dislikes}*/}
@@ -168,7 +227,7 @@ const PostInteractivity = ({ id, creatorId, isLiked }: any) => {
         {/*/>*/}
       </div>
       <div className="ml-auto px-2">
-        <Sparkle size={28} color="#fff" weight="light" className="my-auto" />
+        <Sparkle size={28} weight="light" className="my-auto" />
       </div>
     </div>
   );

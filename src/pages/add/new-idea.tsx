@@ -48,32 +48,32 @@ const NewIdeaPage: NextPageWithLayout = () => {
 
   const reveal = () => setVisibility(!visibile);
   const [text, setText] = useState("");
+  const [bgColor, setBgColor]: any = useState("");
 
   const handleChange = (value: any | string) => {
     setText(value);
     console.log(value)
   };
 
+  const handleColor = (value: string | any) =>{
+    setBgColor(value.target.value)
+    console.log(value.target.value)
+  }
+
   var textContent: any = editorRef.current ? editorRef.current.getContent() : ""
   // const [editorState, setEditorState] = useState(
   //   () => EditorState.createEmpty(),
   // );
-  console.log("Size of sample is: " + textContent.length);
   var compressed = LZString.compress(textContent);
-  console.log("Size of compressed sample is: " + compressed.length);
-  console.log(compressed);
   textContent = LZString.decompress(compressed);
-  console.log("Sample is: " + textContent);
-  const bytes = Buffer.byteLength(compressed, "utf16le");
-
-  console.log(" COMPRESSED SIZE IN BYTES === " + bytes);
+  const bytes = Buffer.byteLength(compressed, "utf8");
 
   return (
     <>
       <div className="sticky flex flex-col">
-        <div className="container mx-auto max-w-md py-12">
+        <div className=" container mx-auto w-5/6 py-12">
           <form
-            className="grid grid-cols-1 gap-y-6 shadow-lg p-8 rounded-lg"
+            className=""
             onSubmit={async (e) => {
               e.preventDefault();
               /**
@@ -82,32 +82,44 @@ const NewIdeaPage: NextPageWithLayout = () => {
                * @link https://react-hook-form.com/
                */
 
-              const $text: HTMLInputElement = (e as any).target.elements.text;
+              const $bgColor: HTMLInputElement = (e as any).target.elements.bgColor;
               const $title: HTMLInputElement = (e as any).target.elements.title;
               const input = {
                 title: $title.value,
                 text: wtf8.encode(compressed),
+                backgroundColor: bgColor
               };
               try {
                 await addPost.mutateAsync(input);
-                console.log("This is the second compressed: " + textContent)
                 $title.value = "";
               } catch {}
             }}
-          >
-            <label htmlFor="title" className="block">
-              <span className="text-gray-700">Title</span>
-              <input
+          > 
+            <div className="mb-5 py-2">
+            <label htmlFor="title" className="block w-4/6 text-lg mb-4">
+              <span className="text-gray-700">Background Color</span>  
+            </label>
+              <div  className="flex flex-row space-x-4">
+                <input type={'button'} name="bgColor" className="cursor-pointer rounded-full w-8 h-8 bg-black hover:shadow-md hover:shadow-black/30  text-transparent" value={'#000'} onClick={handleColor}/>
+                <input type={'button'} name="bgColor" className="cursor-pointer rounded-full bg-amber-400 w-8 h-8  hover:shadow-md hover:shadow-amber-400/70  text-transparent " value={'#fbbf24'} onClick={handleColor}/>
+                <input type={'button'} name="bgColor" className="cursor-pointer rounded-full bg-cyan-700 w-8 h-8  hover:shadow-md hover:shadow-cyan-700/70  text-transparent" value={'#0e7490'} onClick={handleColor}/>
+                <input type={'button'} name="bgColor" className="cursor-pointer rounded-full bg-fuchsia-300 w-8 h-8 hover:shadow-md hover:shadow-fuchsia-300/70  text-transparent" value={'#f0abfc'} onClick={handleColor}/>
+              </div>
+            </div>
+            <label htmlFor="title" className="block w-4/6 text-lg mb-3">
+              <span className="text-gray-700">Title</span>  
+            </label>
+            <input
                 id="title"
                 name="title"
                 type="text"
                 disabled={addPost.isLoading}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="mt-1 mb-5 block w-full h-10 w-4/6 bg-gray-light/20 border border-gray-light focus:outline-none pl-2.5 text-lg font-medium rounded focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               />
-            </label>
 
-            <label className="block">
+            <label className="block w-4/6 text-lg mb-3">
               <span className="text-gray-700">Description</span>
+            </label>
               {/*<textarea
               id="text"
               name="text"
@@ -115,13 +127,14 @@ const NewIdeaPage: NextPageWithLayout = () => {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />*/}
               {/*<ReactQuill  id="text" value={text} onChange={handleChange}/>*/}
+
               <Editor
                 id="text"
                 onChange={handleChange}
-  
+                disabled={addPost.isLoading}
                 apiKey="s9ogc5oa6vle2t2kpoe3ztk5lez6cccpez8ucakqn0nginjt"
                 onInit={(evt, editor) => (editorRef.current = editor)}
-                initialValue="<p>This is the initial content of the editor.</p>"
+                initialValue="<p>Describe what your idea is about</p>"
                 init={{
                   height: 500,
                   menubar: true,
@@ -154,13 +167,13 @@ const NewIdeaPage: NextPageWithLayout = () => {
                     "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
                 }}
               />
-              <button onClick={log}>Log editor content</button>
-            </label>
-            <button
-              type="submit"
-              disabled={addPost.isLoading}
-              className="my-4 capitalize bg-gray text-white font-medium py-2 px-4 rounded-md hover:bg-blue-600"
-            >
+              
+            
+              <button
+                type="submit"
+                disabled={addPost.isLoading}
+                className="my-4 capitalize bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-600 z-20"
+              >
               {addPost.isLoading ? (
                 <span className="flex items-center justify-center">
                   <svg

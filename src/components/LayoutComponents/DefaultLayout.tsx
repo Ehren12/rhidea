@@ -23,14 +23,16 @@ export const DefaultLayout = ({ children }: DefaultLayoutProps) => {
         <title>Rhidea</title>
         <link rel="icon" href="/favicon.ico" />
         <meta charSet="utf-8" />
-        <Script id="flowbite-js" src="../path/to/flowbite/dist/flowbite.js" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+<link href="https://fonts.googleapis.com/css2?family=Didact+Gothic&family=Manrope&family=Montserrat&family=Noto+Sans&family=Open+Sans&family=Poppins&display=swap" rel="stylesheet"/>
       </Head>
       <div>
-        <main className="flex">
+        <main className="flex font-['Open_Sans']">
           <SidebarLeft />
           <div className="w-full pt-0">
             <Topbar />
-            <div className="h-20 w-full border-b border-border-dark/5 z-40 px-7">
+            <div className="h-20 w-full border-b border-gray-400/5 z-40 px-7">
               <div className="h-full w-fit my-auto py-3">
                 <h1 className="text-2xl font-bold opacity-70 my-auto">
                   Your Feed
@@ -46,6 +48,7 @@ export const DefaultLayout = ({ children }: DefaultLayoutProps) => {
                 className={`w-48 h-40 border border-border-dark/20 drop-shadow-xl bg-white fixed z-90 bottom-20 right-72 ${
                   visibile ? "hidden" : "visible"
                 } duration-300`}
+
               >
                 <Link href="/add/new-idea">
                   <a>New Idea</a>

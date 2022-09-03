@@ -29,7 +29,7 @@ export const SidebarLeft = () => {
 		<nav
 			className={`md:ml-auto sticky left-0 top-0 h-screen pr-5 pt-2 ${
 				open ? "w-72" : "w-16"
-			} duration-300 border-r border-border-dark/5`}
+			} duration-300 border-r border-gray-400/5`}
 		>
 			<Link href="/">
 				<a className="flex items-center md:mt-0 h-10 rounded-full w-fit px-5">
@@ -87,13 +87,16 @@ export const SidebarLeft = () => {
 							</a>
 						</Link>
 					</div>
-					{/*
-							 <Link href="#signout" onClick={() => signOut()}>
-							<a className="border-0 focus:outline-none rounded text-base mt-4 md:mt-0">
-								<SignOut size={30} weight="thin" className="cursor-pointer duration-300 text-border-dark/80 "/>
-							</a>
-						</Link>
-						*/}
+
+					<button onClick={() => signOut()}>
+						<a className="border-0 focus:outline-none rounded text-base mt-4 md:mt-0">
+							<SignOut
+								size={30}
+								weight="thin"
+								className="cursor-pointer duration-300 text-border-dark/80 "
+							/>
+						</a>
+					</button>
 				</div>
 			) : (
 				<>

@@ -15,6 +15,7 @@ import { DefaultLayout } from "../components/LayoutComponents/DefaultLayout";
 import type { AppRouter } from "../server/router";
 import { SSRContext } from "../utils/trpc";
 import { SessionProvider } from "next-auth/react";
+import { CookiesProvider } from "react-cookie";
 export type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -49,7 +50,9 @@ const MyApp = (({ Component, pageProps }: AppPropsWithLayout) => {
     Component.getLayout ??
     ((page) => (
       <SessionProvider session={pageProps.session}>
+        <CookiesProvider>
         <DefaultLayout>{page}</DefaultLayout>
+        </CookiesProvider>
       </SessionProvider>
     ));
 

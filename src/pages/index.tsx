@@ -41,7 +41,7 @@ const IndexPage: NextPageWithLayout = () => {
       <div className="container mx-auto max-w-5xl my-20 px-5">
         <div className="grid mx-auto px-24 grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-5">
           {postsQuery.data?.map((item) => (
-            <Idea key={item.id} id={item.id} title={item.title} creatorId={item.creatorId}/>
+            <Idea key={item.id} id={item.id} title={item.title} creatorId={item.creatorId} bgColor={item.backgroundColor}/>
           ))}
         </div>
       </div>

@@ -10,59 +10,98 @@ import { useEffect, useState } from "react";
 import { title } from "process";
 import LikeButton from "../LikeButton";
 import PostInteractivity from "./PostInteractivityContainer";
-import create from 'zustand'
+import create from "zustand";
 import { useStore } from "../../../lib/store";
-import {
-  CircleWavyCheck,
-  DotsThreeVertical
-} from "phosphor-react";
+import { CircleWavyCheck, DotsThreeVertical } from "phosphor-react";
 
+type IdeaProps = { bgColor: any; id: string; title: string; creatorId: string };
 
-type IdeaProps = { id: string; title: string, creatorId: string };
-
-export const Idea = ({ id, title, creatorId }: IdeaProps) => {
-  const like: any = trpc.useQuery(["like.like", {postId: id, userId: creatorId}])
+export const Idea = ({ bgColor, id, title, creatorId }: IdeaProps) => {
+  const like: any = trpc.useQuery([
+    "like.like",
+    { postId: id, userId: creatorId },
+  ]);
   const postsQuery = trpc.useQuery(["post.all"]);
   const { data: session } = useSession();
   const user: any = session?.user;
-  return (
 
+  return (
     // <h2>
     //     Posts
     //     {postsQuery.status === 'loading' && '(loading)'}
     // </h2>
     <div className="h-fit">
-    {user ? (
-    <article className="shadow h-fit w-full rounded bg-[#000] text-[#fff]">
-      <div className="p-5 flex flex-col h-full">
-        <div className="flex flex-row">
-          <div className="h-11 w-11 rounded">
-              <Image
-                src={`${user.image}`}
-                width={100}
-                height={100}
-                className="rounded-full"
+      {user ? (
+        <article
+          className={`shadow h-fit w-full rounded`}
+          style={{
+            backgroundColor: bgColor ? `${bgColor}` : `#000`,
+            color: bgColor === "#fbbf24" ? "#000" : "#fff",
+          }}
+        >
+          <div className="p-5 flex flex-col h-full">
+            <div className="flex flex-row">
+              <div className="h-11 w-11 rounded">
+                <Image
+                  src={`${user.image}`}
+                  width={100}
+                  height={100}
+                  className="rounded-full"
+                />
+              </div>
+              <p className="my-auto text-base opacity-70 text-semibold ml-3 mr-2">
+                @ehrennwokocha
+              </p>
+              <CircleWavyCheck
+                size={23}
+                color="#306BAC"
+                weight="duotone"
+                className="my-auto"
               />
+              <div className="ml-auto py-1.5 flex flex-row">
+                <button
+                  className="border border-[#fff] my-auto px-2 py-0.5 rounded mr-2"
+                  style={{
+                    borderColor: bgColor === "#fbbf24" ? "#000" : "#fff",
+                    color: bgColor === "#fbbf24" ? "#000" : "#fff",
+                  }}
+                >
+                  Follow +
+                </button>
+                <button>
+                  <DotsThreeVertical
+                    size={28}
+                    weight="thin"
+                    className="my-auto"
+                    style={{
+                      color: bgColor === "#fbbf24" ? "#000" : "#fff",
+                    }}
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="h-full w-full pr-28 pl-14 pb-10 pt-8 m-auto">
+              <Link href={`/idea/${id}`}>
+                <h1 className="text-4xl font-bold w-5/6">
+                  <a className="cursor-pointer hover:underline">{title}</a>
+                </h1>
+              </Link>
+            </div>
 
-            </div>
-            <p className="my-auto text-base opacity-70 text-semibold ml-3 mr-2">@ehrennwokocha</p>
-            <CircleWavyCheck size={23} color="#306BAC" weight="duotone" className="my-auto"/>
-            <div className="ml-auto py-1.5 flex flex-row">
-            <button className="border border-[#fff] my-auto px-2 py-0.5 rounded mr-2">Follow +</button>
-            <button><DotsThreeVertical size={28} color="#fff" weight="thin" className="my-auto"/></button>      
-            </div>
-        </div>
-        <div className="h-full w-full pr-28 pl-14 pb-10 pt-8 m-auto">
-          <Link href={`/idea/${id}`}><h1 className="text-4xl font-bold w-5/6"><a className="cursor-pointer hover:underline">{title}</a></h1></Link>
-        </div>
-        
-        {/*<Link href={`/idea/${id}`}>
+            {/*<Link href={`/idea/${id}`}>
           <a>View more</a>
         </Link>*/}
-        <PostInteractivity id={id} creatorId={creatorId} isLiked={like.data}/>
-      </div>
-    </article>
-    ) : (<h1>hi</h1>)}
+            <PostInteractivity
+              id={id}
+              creatorId={creatorId}
+              isLiked={like.data}
+              bgColor={bgColor}
+            />
+          </div>
+        </article>
+      ) : (
+        <h1>hi</h1>
+      )}
     </div>
   );
 };

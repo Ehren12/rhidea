@@ -12,7 +12,7 @@ export const Topbar = () => {
   return (
     <>
       <div>
-        <header className="text-gray-600 body-font h-14 border-b border-border-dark/5">
+        <header className="text-gray-600 body-font h-14 border-b border-gray-400/5">
           <div className="container m-auto flex flex-wrap px-7  flex-col md:flex-row items-center">
             <nav className="md:ml-auto flex flex-wrap items-left justify-center mx-auto my-2 w-full">
               {user ? (
