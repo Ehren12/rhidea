@@ -13,8 +13,7 @@ import { createRouter } from "../context";
  * It's important to always explicitly say which fields you want to return in order to not leak extra information
  * @see https://github.com/prisma/prisma/issues/9353
  */
-const defaultProfileSelect = Prisma.validator<Prisma.ProfileSelect>()({
-  userId: true,
+const defaultProfileSelect = Prisma.validator<Prisma.UserSelect>()({
   username: true,
 });
 
