@@ -24,6 +24,10 @@ export const Idea = ({ bgColor, id, title, creatorId }: IdeaProps) => {
   const postsQuery = trpc.useQuery(["post.all"]);
   const { data: session } = useSession();
   const user: any = session?.user;
+  const profileByEmail = trpc.useQuery(["profile.findByEmail", {id: creatorId}])
+  const profileData = profileByEmail.data;
+  const profileQuery = trpc.useQuery(["profile.user_profile", { username: profileData?.username }]);
+  const data = profileQuery.data;
 
   return (
     // <h2>
@@ -43,14 +47,14 @@ export const Idea = ({ bgColor, id, title, creatorId }: IdeaProps) => {
             <div className="flex flex-row">
               <div className="h-11 w-11 rounded">
                 <Image
-                  src={`${user.image}`}
+                  src={`${data?.image}`}
                   width={100}
                   height={100}
                   className="rounded-full"
                 />
               </div>
               <p className="my-auto text-base opacity-70 text-semibold ml-3 mr-2">
-                @ehrennwokocha
+                @{data?.username}
               </p>
               <CircleWavyCheck
                 size={23}

@@ -13,8 +13,9 @@ import { createRouter } from "../context";
  * It's important to always explicitly say which fields you want to return in order to not leak extra information
  * @see https://github.com/prisma/prisma/issues/9353
  */
-const defaultProfileSelect = Prisma.validator<Prisma.LikeSelect>()({
-	userId: true,
+const defaultProfileSelect = Prisma.validator<Prisma.ProfileSelect>()({
+  userId: true,
+  username: true,
 });
 
 const getEmailOrThrow = (ctx: any) => {
@@ -47,26 +48,89 @@ export const profileRouter = createRouter()
     },
   })
   // read
-  .query("username", {
-    async resolve({ ctx }: any) {
-      /**
-       * For pagination you can have a look at this docs site
-       * @link https://trpc.io/docs/useInfiniteQuery
-       */
-      const email: any = getEmailOrThrow(ctx);
-      const user = await ctx.prisma.user.findUnique({
+  // .query("user_profile", {
+  //   input: z.object({
+  //     username: z.string(),
+  //     // userId: z.any(),
+  //   }),
+  //   async resolve({ input, ctx }: any) {
+  //     /**
+  //      * For pagination you can have a look at this docs site
+  //      * @link https://trpc.io/docs/useInfiniteQuery
+  //      */
+  //     const { username } = input;
+  //     // const user = await ctx.prisma.user.findUnique({
+  //     //   where: {
+  //     //     email: email
+  //     //   }
+  //     // })
+  //     console.log("BEFORE PROFILE");
+  //     const profile = await ctx.prisma.profile.findUnique({
+  //       where: {
+  //         username: username,
+  //       },
+  //     });
+  //     console.log("WORKING");
+  //     console.log("profile des " + profile.username);
+  //     return profile;
+  //   },
+  // })
+
+  .query("findByEmail", {
+    input: z.object({
+      id: z.any(),
+      email: z.string().optional(),
+    }),
+    async resolve({ input, ctx }: any) {
+      const { id } = input;
+      console.log("ID: " + id);
+      const { email } = input;
+      let profileByEmail;
+      console.log("EMAIL: " + email);
+      if (id === undefined) {
+        profileByEmail = await ctx.prisma.user.findUnique({
+          where: {
+            email: email,
+          },
+        });
+      } else {
+        profileByEmail = await ctx.prisma.user.findUnique({
+          where: {
+            id: id,
+          },
+        });
+      }
+
+      if (!profileByEmail) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `No post with id '${id}'`,
+        });
+      }
+      console.log("working" + profileByEmail.username);
+      return profileByEmail;
+    },
+  })
+
+  .query("user_profile", {
+    input: z.object({
+      username: z.any(),
+    }),
+    async resolve({ input, ctx }: any) {
+      const { username } = input;
+      const post = await ctx.prisma.user.findUnique({
         where: {
-          email: email
-        }
-      })
-      const profile = await ctx.prisma.profile.findUnique({
-      	where: {
-      		userId: user.id
-      	}
+          username,
+        },
       });
-      console.log("WORKING")
-      console.log("profile des " + profile.username)
-      return profile;
+      if (!post) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `No post with id '${username}'`,
+        });
+      }
+      console.log("working");
+      return post;
     },
   })
   .query("allLikesCount", {
@@ -77,7 +141,7 @@ export const profileRouter = createRouter()
     async resolve({ input, ctx }) {
       const { postId } = input;
       return ctx.prisma.post.findUnique({
-        where: {id: postId},
+        where: { id: postId },
         include: {
           _count: {
             select: { likes: true },
@@ -98,9 +162,11 @@ export const profileRouter = createRouter()
         where: { postId_userId: { postId: postId, userId: userId } },
         select: defaultProfileSelect,
       });
-      if (like){
-        return true
-      } else { return false} 
+      if (like) {
+        return true;
+      } else {
+        return false;
+      }
     },
   })
   // update

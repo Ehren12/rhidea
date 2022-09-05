@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { ReactNode, useState } from "react";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { trpc } from "../../../utils/trpc";
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -26,6 +27,9 @@ export const SidebarRight = () => {
 	const user: any = session?.user;
 	const today = new Date();
 	const curHr = today.getHours();
+	const profileByEmail = trpc.useQuery(["profile.findByEmail", {email: user?.email}])
+	const profileData = profileByEmail.data;
+	const profileQuery = trpc.useQuery(["profile.user_profile", {username: profileData?.username}]);
 
 	if (curHr < 12) {
 		console.log("good morning");
@@ -65,9 +69,9 @@ export const SidebarRight = () => {
 				{user ? (
 					<>
 						<div className="h-11 w-11 rounded">
-						<Link href={`/foodboy_010`}>
+						<Link href={`/${profileQuery.data?.username}`}>
 							<Image
-								src={`${user.image}`}
+								src={`${user?.image}`}
 								width={100}
 								height={100}
 								className="rounded-2xl cursor-pointer"
@@ -82,7 +86,7 @@ export const SidebarRight = () => {
 									? randomWord(afternoon_statements)
 									: randomWord(evening_statements)}
 							</h4>
-							<Link href={`/foodboy_010`}>
+							<Link href={`/${profileQuery.data?.username}`}>
 							<h1 className="text-lg antialiased font-medium  h-fit cursor-pointer">
 								<a>{user.name}</a>
 							</h1>

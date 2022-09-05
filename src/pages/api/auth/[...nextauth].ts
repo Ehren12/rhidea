@@ -19,16 +19,18 @@ export const authOptions: NextAuthOptions = {
   ],
   events: {
     signIn: async ({ user, profile, isNewUser }: any) => {
-      const user_profile = await prisma.profile.findUnique({
+      const user_profile = await prisma.user.findUnique({
         where: {
-          userId: user.id,
+          id: user.id,
         },
       });
-      const username = generateFromEmail(user?.email, 4);
-      if (user_profile === null) {
-        await prisma.profile.create({
+      const username: string = generateFromEmail(user?.email, 4);
+      if (user_profile?.username === null) {
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
           data: {
-            user: { connect: { id: user.id } },
             username: username,
           },
         });
@@ -36,20 +38,22 @@ export const authOptions: NextAuthOptions = {
 
       console.log("profile created");
     },
-    signOut: async (message) => {
-      console.log("CUSTOM EVENT signOut");
-    },
-    createUser: async ({ user }:any) => {
-      const user_profile = await prisma.profile.findUnique({
+    // signOut: async () => {
+    //   console.log("CUSTOM EVENT signOut");
+    // },
+    createUser: async ({ user }: any) => {
+      const user_profile = await prisma.user.findUnique({
         where: {
-          userId: user.id,
+          id: user.id,
         },
       });
-      const username = generateFromEmail(user?.email, 4);
-      if (user_profile === null) {
-        await prisma.profile.create({
+      const username: string = generateFromEmail(user?.email, 4);
+      if (user_profile?.username === null) {
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
           data: {
-            user: { connect: { id: user.id } },
             username: username,
           },
         });

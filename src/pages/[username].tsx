@@ -10,28 +10,35 @@ import { signIn, signOut, useSession } from "next-auth/react";
 const ProfilePage: NextPageWithLayout = () => {
 	const { data: session } = useSession();
 	const user: any = session?.user;
-	 const profileQuery = trpc.useQuery(["profile.username"]);
+	// const userQuery = trpc.useQuery(["profile.user"])
+	// const user_id: any = userQuery.data?.id
+	const username = useRouter().query.username as string;
+	// console.log(username)
+	const profileQuery = trpc.useQuery(["profile.user_profile", { username }]);
+	const data = profileQuery.data;
+
 	return (
 		<>
-		{user ? (
-		<>
-			<div className="h-11 w-11 rounded">
-				<Link href={`/foodboy_010`}>
-					<Image
-						src={`${user.image}`}
-						width={100}
-						height={100}
-						className="rounded-2xl cursor-pointer"
-					/>
-				</Link>
-			</div>
-			<h1>{user.name}</h1>
-			<h1>@{profileQuery.data?.user}</h1>
-
-		</>
-		) : (
-					<h1>nope</h1>
-				)}
+			{user && session ? (
+				<>
+					<div className="h-11 w-11 rounded">
+						<Link href={`/${data?.username}`}>
+							<Image
+								src={`${data?.image}`}
+								width={100}
+								height={100}
+								className="rounded-2xl cursor-pointer"
+							/>
+						</Link>
+					</div>
+					<h1>{data?.name}</h1>
+					<h1>@{data?.username}</h1>
+					<h1>Followers: {data?.followers}</h1>
+					<h1>Following: {data?.following}</h1>
+				</>
+			) : (
+				<h1>nope</h1>
+			)}
 		</>
 	);
 };
