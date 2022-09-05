@@ -11,7 +11,6 @@ import { title } from "process";
 import LikeButton from "../LikeButton";
 import PostInteractivity from "./PostInteractivityContainer";
 import create from "zustand";
-import { useStore } from "../../../lib/store";
 import { CircleWavyCheck, DotsThreeVertical } from "phosphor-react";
 
 type IdeaProps = { bgColor: any; id: string; title: string; creatorId: string };
