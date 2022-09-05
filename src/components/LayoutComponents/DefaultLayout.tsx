@@ -38,13 +38,14 @@ export const DefaultLayout = ({ children }: DefaultLayoutProps) => {
                   Your Feed
                 </h1>
                 <p className="opacity-50 font-semibold text-sm">
-                  Ideas from those you follow
+                  {/*Ideas from those you follow*/}
+                  *This is a development or test version of the website so many features do not work!
                 </p>
               </div>
             </div>
             <div className="p-7 overflow-visible">
               {children}
-              <div
+{/*              <div
                 className={`w-48 h-40 border border-border-dark/20 drop-shadow-xl bg-white fixed z-90 bottom-20 right-72 ${
                   visibile ? "hidden" : "visible"
                 } duration-300`}
@@ -60,7 +61,12 @@ export const DefaultLayout = ({ children }: DefaultLayoutProps) => {
                 onClick={reveal}
               >
                 <Plus size={32} color="#333333" weight="thin" />
-              </button>
+              </button>*/}
+              <div className="fixed z-90 bottom-5 right-72 bg-indigo-500  w-12 h-12 rounded-full drop-shadow-lg shadow-current flex justify-center items-center text-white text-4xl hover:bg-dark-blue/90 hover:w-14 hover:h-14 hover:drop-shadow-2xl active:bg-dark-blue/90 active:w-14 active:h-14 active:drop-shadow-2xl duration-300">
+              <Link href="/add/new-idea">
+                  <a><Plus size={32} color="#333333" weight="thin" /></a>
+              </Link>
+              </div>
             </div>
           </div>
           <SidebarRight />

@@ -47,7 +47,7 @@ export const Idea = ({ bgColor, id, title, creatorId }: IdeaProps) => {
             <div className="flex flex-row">
               <div className="h-11 w-11 rounded">
                 <Image
-                  src={`${data?.image}`}
+                  src={`${!data ? "/rhidea.svg": data?.image}`}
                   width={100}
                   height={100}
                   className="rounded-full"

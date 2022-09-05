@@ -16,8 +16,11 @@ import { Idea } from "../../components/GeneralComponents/Idea/IdeaContainer";
 import { Editor } from "@tinymce/tinymce-react";
 import * as LZString from 'lz-string'
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import ColorBtn from "../../components/PageComponents/ColorButtons";
 const NewIdeaPage: NextPageWithLayout = () => {
   const editorRef : any = useRef(null);
+  const ref = useRef(null);
+  const [select, setSelect] = useState(false);
   const log = () => {
     if (editorRef.current) {
       console.log(editorRef.current.getContent());
@@ -55,8 +58,20 @@ const NewIdeaPage: NextPageWithLayout = () => {
     console.log(value)
   };
 
+    useEffect(() => {
+    // 👇️ use document.getElementById()
+    const el = document.getElementById('my-element');
+    console.log(el);
+
+    // 👇️ (better) use a ref
+    const el2 = ref.current;
+    console.log(el2);
+  }, []);
+
   const handleColor = (value: string | any) =>{
+    (e: any) => { e.stopPropagation();}
     setBgColor(value.target.value)
+    setSelect(!select)
     console.log(value.target.value)
   }
 
@@ -97,13 +112,15 @@ const NewIdeaPage: NextPageWithLayout = () => {
           > 
             <div className="mb-5 py-2">
             <label htmlFor="title" className="block w-4/6 text-lg mb-4">
-              <span className="text-gray-700">Background Color</span>  
+              <span className="text-gray-700">Background Color</span>
+              <p className="text-xs opacity-60">*FOR TESTERS: Just Select One Color this feature is still in development phase</p>
             </label>
               <div  className="flex flex-row space-x-4">
-                <input type={'button'} name="bgColor" className="cursor-pointer rounded-full w-8 h-8 bg-black hover:shadow-md hover:shadow-black/30  text-transparent" value={'#000'} onClick={handleColor}/>
-                <input type={'button'} name="bgColor" className="cursor-pointer rounded-full bg-amber-400 w-8 h-8  hover:shadow-md hover:shadow-amber-400/70  text-transparent " value={'#fbbf24'} onClick={handleColor}/>
-                <input type={'button'} name="bgColor" className="cursor-pointer rounded-full bg-cyan-700 w-8 h-8  hover:shadow-md hover:shadow-cyan-700/70  text-transparent" value={'#0e7490'} onClick={handleColor}/>
-                <input type={'button'} name="bgColor" className="cursor-pointer rounded-full bg-fuchsia-300 w-8 h-8 hover:shadow-md hover:shadow-fuchsia-300/70  text-transparent" value={'#f0abfc'} onClick={handleColor}/>
+                <ColorBtn color={'black'} hex={'000'} />
+                <ColorBtn color={'amber-400'} hex={'fbbf24'}/>
+                <ColorBtn color={'cyan-700'} hex={'0e7490'} />
+                <ColorBtn color={'fuchsia-300'} hex={'f0abfc'} />
+                
               </div>
             </div>
             <label htmlFor="title" className="block w-4/6 text-lg mb-3">
